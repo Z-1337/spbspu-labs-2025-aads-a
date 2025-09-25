@@ -22,6 +22,9 @@ namespace kushekbaev
       const T& front() const noexcept;
       const T& back() const noexcept;
 
+      T& operator[](size_t index) noexcept;
+      const T& operator[](size_t index) const noexcept;
+
       bool empty() const noexcept;
       size_t size() const noexcept;
 
@@ -154,6 +157,18 @@ namespace kushekbaev
   const T& Vector< T >::front() const noexcept
   {
     return data_[0];
+  }
+
+  template< typename T >
+  T& Vector< T >::operator[](size_t index) noexcept
+  {
+    return data_[index];
+  }
+
+  template< typename T >
+  const T& Vector< T >::operator[](size_t index) const noexcept
+  {
+    return data_[index];
   }
 
   template< typename T >
