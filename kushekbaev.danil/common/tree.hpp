@@ -1,11 +1,12 @@
-#ifndef UBST_HPP
-#define UBST_HPP
+#ifndef TREE_HPP
+#define TREE_HPP
 
 #include <functional>
 #include <utility>
 #include "constiterator.hpp"
 #include "iterator.hpp"
-#include <stack.hpp>
+#include "stack.hpp"
+#include "queue.hpp"
 
 namespace kushekbaev
 {
@@ -78,6 +79,19 @@ namespace kushekbaev
     cIt lower_bound(const Key& key) const;
     It upper_bound(const Key& key);
     cIt upper_bound(const Key& key) const;
+
+    template< typename F >
+    F traverse_lnr(F f) const;
+    template< typename F >
+    F traverse_rnl(F f) const;
+    template< typename F >
+    F traverse_breadth(F f) const;
+    template< typename F >
+    F traverse_lnr(F f);
+    template< typename F >
+    F traverse_rnl(F f);
+    template< typename F >
+    F traverse_breadth(F f);
 
     private:
       using node_t = kushekbaev::TreeNode< Key, Value, Cmp >;
@@ -743,6 +757,160 @@ namespace kushekbaev
   typename Tree< Key, Value, Cmp >::cIt Tree< Key, Value, Cmp >::upper_bound(const Key& key) const
   {
     return cIt(upper_bound(key));
+  }
+
+  template< typename Key, typename Value, typename Cmp >
+  template< typename F >
+  F Tree< Key, Value, Cmp>::traverse_lnr(F f) const
+  {
+    if (empty() || root_ == fakeroot_)
+    {
+      return f;
+    }
+    Stack< const node_t* > stack;
+    const node_t* current = root_;
+    while (current || !stack.empty())
+    {
+      while (current)
+      {
+        stack.push(current);
+        current = current->left;
+      }
+      current = stack.top();
+      stack.pop();
+      f(current->data);
+      current = current->right;
+    }
+    return f;
+  }
+
+  template< typename Key, typename Value, typename Cmp >
+  template< typename F >
+  F Tree< Key, Value, Cmp>::traverse_rnl(F f) const
+  {
+    if (empty() || root_ == fakeroot_)
+    {
+      return f;
+    }
+    Stack< const node_t* > stack;
+    const node_t* current = root_;
+    while (current || !stack.empty())
+    {
+      while (current)
+      {
+        stack.push(current);
+        current = current->right;
+      }
+      current = stack.top();
+      stack.pop();
+      f(current->data);
+      current = current->left;
+    }
+    return f;
+  }
+
+  template< typename Key, typename Value, typename Cmp >
+  template< typename F >
+  F Tree< Key, Value, Cmp>::traverse_breadth(F f) const
+  {
+    if (empty() || root_ == fakeroot_)
+    {
+      return f;
+    }
+    Queue< const node_t* > queue;
+    queue.push(root_);
+    while (!queue.empty())
+    {
+      const node_t* current = queue.front();
+      queue.pop();
+      f(current->data);
+      if (current->left)
+      {
+        queue.push(current->left);
+      }
+      if (current->right)
+      {
+        queue.push(current->right);
+      }
+    }
+    return f;
+  }
+
+  template< typename Key, typename Value, typename Cmp >
+  template< typename F >
+  F Tree< Key, Value, Cmp>::traverse_lnr(F f)
+  {
+    if (empty() || root_ == fakeroot_)
+    {
+      return f;
+    }
+    Stack< node_t* > stack;
+    node_t* current = root_;
+    while (current || !stack.empty())
+    {
+      while (current)
+      {
+        stack.push(current);
+        current = current->left;
+      }
+      current = stack.top();
+      stack.pop();
+      f(current->data);
+      current = current->right;
+    }
+    return f;
+  }
+
+  template< typename Key, typename Value, typename Cmp >
+  template< typename F >
+  F Tree< Key, Value, Cmp>::traverse_rnl(F f)
+  {
+    if (empty() || root_ == fakeroot_)
+    {
+      return f;
+    }
+    Stack< node_t* > stack;
+    node_t* current = root_;
+    while (current || !stack.empty())
+    {
+      while (current)
+      {
+        stack.push(current);
+        current = current->right;
+      }
+      current = stack.top();
+      stack.pop();
+      f(current->data);
+      current = current->left;
+    }
+    return f;
+  }
+
+  template< typename Key, typename Value, typename Cmp >
+  template< typename F >
+  F Tree< Key, Value, Cmp>::traverse_breadth(F f)
+  {
+    if (empty() || root_ == fakeroot_)
+    {
+      return f;
+    }
+    Queue< node_t* > queue;
+    queue.push(root_);
+    while (!queue.empty())
+    {
+      node_t* current = queue.front();
+      queue.pop();
+      f(current->data);
+      if (current->left)
+      {
+        queue.push(current->left);
+      }
+      if (current->right)
+      {
+        queue.push(current->right);
+      }
+    }
+    return f;
   }
 
   template<typename Key, typename Value, typename Cmp>
